@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const token = process.env.TELEGRAM_TOKEN;
+const repo = process.env.GITHUB_REPOSITORY;
 const TelegramBot = require('node-telegram-bot-api');
 const bot = new TelegramBot(token, {
   polling: true
@@ -22,6 +23,13 @@ bot.onText(/\/help/, (msg) => {
   bot.sendMessage(msg.chat.id, 'use <b>/available</b> to get a list of all supported currencies.', {
     parse_mode: "html",
     disable_web_page_preview: true
+  });
+});
+
+// Source
+bot.onText(/\/source/, (msg) => {
+  bot.sendMessage(msg.chat.id, '<a href="' + repo + '">Github repository</a>', {
+    parse_mode: "html"
   });
 });
 

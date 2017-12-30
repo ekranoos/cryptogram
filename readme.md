@@ -15,4 +15,5 @@ Command                 | Description
 ----------------------- | -----------------
 `/price`                | Shows the current price for a currency.
 `/available`            | Shows a list of all supported currencies.
+`/source`               | Github repository.
 `/help` \| `/start`     | How to use the bot.
