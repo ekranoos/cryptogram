@@ -56,7 +56,7 @@ bot.onText(/\/price (.+)/, (msg, match) => {
 		.then(response => {
 			response.json().then(json => {
 				var name = '<b>‼ Name: </b>' + '<a href="https://coinmarketcap.com/currencies/' + currency + '">' + `${json[0].name}` + '</a>' + '\n';
-				var rank = '<b>⭐ Rank: </b>' + `${json[0].symbol}` + '\n';
+				var rank = '<b>⭐ Rank: </b>' + `${json[0].rank}` + '\n';
 				var last24h = '<b>⏰ Last 24h: </b>' + `${json[0].percent_change_24h}` + ' %' + '\n';
 				var last7d = '<b>⏳ Last 7d: </b>' + `${json[0].percent_change_7d}` + ' %' + '\n';
 
