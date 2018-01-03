@@ -2,7 +2,7 @@
   "name": "cryptogram",
   "version": "0.1.0",
   "description": "Cryptocurrency Telegram Bot",
-  "main": "app.js",
+  "main": "src/app.js",
   "scripts": {
     "start": "node src/app.js"
   },
