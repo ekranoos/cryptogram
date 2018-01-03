@@ -97,5 +97,7 @@ bot.onText(/\/price (.+)/, (msg, match) => {
 				});
 			});
 		})
+	} else {
+		bot.sendMessage(msg.chat.id, 'Currency not supported.');
 	}
 });
