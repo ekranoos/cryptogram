@@ -20,10 +20,6 @@ bot.onText(/\/help/, (msg) => {
 	bot.sendMessage(msg.chat.id, '<b>/price + CURRENCY</b> (<i>bitcoin, ethereum, ..</i>).', {
 		parse_mode: "html"
 	});
-	bot.sendMessage(msg.chat.id, 'use <b>/available</b> to get a list of all supported currencies.', {
-		parse_mode: "html",
-		disable_web_page_preview: true
-	});
 });
 
 // Source
