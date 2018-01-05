@@ -11,6 +11,7 @@
   "dependencies": {
     "dotenv": "^4.0.0",
     "node-fetch": "^1.7.3",
-    "node-telegram-bot-api": "^0.30.0"
+    "node-telegram-bot-api": "^0.30.0",
+    "numbro": "^1.11.1"
   }
 }

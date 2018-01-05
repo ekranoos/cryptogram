@@ -1,12 +1,11 @@
 require('dotenv').config();
 
-const token = process.env.TELEGRAM_TOKEN;
-const repo = process.env.GITHUB_REPOSITORY;
 const TelegramBot = require('node-telegram-bot-api');
-const bot = new TelegramBot(token, {
+const bot = new TelegramBot(process.env.TELEGRAM_TOKEN, {
 	polling: true
 });
 const fetch = require("node-fetch");
+var numbro = require("numbro");
 
 // Start
 bot.onText(/\/start/, (msg) => {
@@ -24,79 +23,43 @@ bot.onText(/\/help/, (msg) => {
 
 // Source
 bot.onText(/\/source/, (msg) => {
-	bot.sendMessage(msg.chat.id, '<a href="' + repo + '">Github repository</a>', {
+	bot.sendMessage(msg.chat.id, '<a href="' + process.env.GITHUB_REPOSITORY + '">Github repository</a>', {
 		parse_mode: "html"
 	});
 });
 
-// Check if a currency has been added to the /price command
-bot.onText(/\price/, (msg) => {
-	async function issetCurrency(msg) {
-		var data = await bot.getMe({});
-		if (msg.text == '/price' || msg.text == '/price@' + data.username) {
-			bot.sendMessage(msg.chat.id, 'You actually have to add a currency.');
-		}
+// Price
+bot.onText(/\/price/, (msg) => {
+
+	// Check if a currency has been added
+	if (msg.text.split(' ').length < 2) {
+		bot.sendMessage(msg.chat.id, 'You actually have to add a currency.');
+		return;
 	}
 
-	issetCurrency(msg);
-});
-
-// Price
-bot.onText(/\/price (.+)/, (msg, match) => {
-	const resp = match[1].toLowerCase();
+	const resp = msg.text.split(' ')[1].toLowerCase();
 	var map = require('./currencies');
 
 	if (map[resp]) {
 		currency = map[resp];
 		fetch('https://api.coinmarketcap.com/v1/ticker/' + currency + '/?convert=EUR&USD')
-		.then(response => {
-			response.json().then(json => {
-				var name = '<b>‼ Name: </b>' + '<a href="https://coinmarketcap.com/currencies/' + currency + '">' + `${json[0].name}` + '</a>' + '\n';
-				var rank = '<b>⭐ Rank: </b>' + `${json[0].rank}` + '\n';
-				var last24h = '<b>⏰ Last 24h: </b>' + `${json[0].percent_change_24h}` + ' %' + '\n';
-				var last7d = '<b>⏳ Last 7d: </b>' + `${json[0].percent_change_7d}` + ' %' + '\n';
+			.then(response => {
+				response.json().then(json => {
+					var name = `<b>‼ Name: </b><a href="https://coinmarketcap.com/currencies/${currency}/">${json[0]['name']}</a>\n`;
+					var rank = `<b>⭐ Rank: </b>${json[0]['rank']}\n`;
+					var last24h = `<b>⏰ Last 24h: </b>${numbro(json[0]['percent_change_24h']).format('0.00')} %\n`;
+					var last7d = `<b>⏳ Last 7d: </b>${numbro(json[0]['percent_change_7d']).format('0.00')} %\n`;
+					var eur = `<b>💶 EUR: </b>${numbro(json[0]['price_eur']).format('0,0.00')} €\n`;
+					var usd = `<b>💵 USD: </b>${numbro(json[0]['price_usd']).format('0,0.00')} $\n`;
+					var marketCap = `<b>🔸 Market Cap: </b>${numbro(json[0]['market_cap_usd']).format('0,0.00')} $\n`;
+					var volume24h = `<b>💹 24h Volume: </b>${numbro(json[0]['24h_volume_usd']).format('0,0.00')} $\n`;
 
-				var euro = `${json[0].price_eur}`;
-				euro = parseFloat(euro).toFixed(2).replace('.', ',');
-				switch (euro.toString().split(",")[0].length) {
-					case 4:
-					euro = euro.replace(/(\d{1})(\d*)/, '$1.$2');
-					break;
-					case 5:
-					euro = euro.replace(/(\d{2})(\d*)/, '$1.$2');
-					break;
-					case 6:
-					euro = euro.replace(/(\d{3})(\d*)/, '$1.$2');
-					break;
-					case 7:
-					euro = euro.replace(/(\d{4})(\d*)/, '$1.$2');
-					break;
-				}
-				var eur = '<b>💶 EUR: </b>' + euro + ' €' + '\n';
-
-				var dollar = `${json[0].price_usd}`;
-				dollar = parseFloat(dollar).toFixed(2).replace('.', ',');
-				switch (dollar.toString().split(",")[0].length) {
-					case 4:
-					dollar = dollar.replace(/(\d{1})(\d*)/, '$1.$2');
-					break;
-					case 5:
-					dollar = dollar.replace(/(\d{2})(\d*)/, '$1.$2');
-					break;
-					case 6:
-					dollar = dollar.replace(/(\d{3})(\d*)/, '$1.$2');
-					break;
-					case 7:
-					dollar = dollar.replace(/(\d{4})(\d*)/, '$1.$2');
-					break;
-				}
-				var usd = '<b>💵 USD: </b>' + dollar + ' $' + '\n';
-				bot.sendMessage(msg.chat.id, name + rank + last24h + last7d + eur + usd, {
-					parse_mode: "html",
-					disable_web_page_preview: true
+					bot.sendMessage(msg.chat.id, name + rank + last24h + last7d + eur + usd + volume24h + marketCap, {
+						parse_mode: "html",
+						disable_web_page_preview: true
+					});
 				});
-			});
-		})
+			})
 	} else {
 		bot.sendMessage(msg.chat.id, 'Currency not supported.');
 	}
