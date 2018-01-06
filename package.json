@@ -1,10 +1,10 @@
 {
   "name": "cryptogram",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Cryptocurrency Telegram Bot",
   "main": "src/app.js",
   "scripts": {
-    "start": "node src/app.js"
+    "start": "node --no-deprecation src/app.js"
   },
   "author": "Dylan Ryan",
   "license": "MIT",
